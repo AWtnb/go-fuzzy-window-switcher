@@ -32,8 +32,10 @@ var (
 	procGetModuleFileNameExW = psapi.MustFindProc("GetModuleFileNameExW")
 )
 
-const PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
-const SW_RESTORE = 9
+const (
+	PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
+	SW_RESTORE                        = 9
+)
 
 func enumWindows(enumFunc uintptr, lparam uintptr) (err error) {
 	r1, _, e1 := syscall.SyscallN(procEnumWindows.Addr(), uintptr(enumFunc), uintptr(lparam), 0)
@@ -187,7 +189,7 @@ func run() int {
 			h, ok := hwndMap[s]
 			if ok {
 				if !ForceForegroundWindow(h) {
-					fmt.Printf("Failed to activate window (%d)\n", h)
+					fmt.Printf("Failed to activate window: %s\n", s)
 				}
 				return
 			}
