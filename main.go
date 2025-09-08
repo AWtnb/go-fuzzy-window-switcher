@@ -23,7 +23,6 @@ var (
 )
 
 const PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
-const PROCESS_VM_READ = 0x0010
 
 func EnumWindows(enumFunc uintptr, lparam uintptr) (err error) {
 	r1, _, e1 := syscall.SyscallN(procEnumWindows.Addr(), uintptr(enumFunc), uintptr(lparam), 0)
@@ -61,7 +60,7 @@ func GetProcessID(hwnd syscall.Handle) (uint32, error) {
 
 func GetProcessName(pid uint32) (string, error) {
 	hProcess, _, err := procOpenProcess.Call(
-		PROCESS_QUERY_LIMITED_INFORMATION|PROCESS_VM_READ,
+		PROCESS_QUERY_LIMITED_INFORMATION,
 		0,
 		uintptr(pid),
 	)
