@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"slices"
+	"strings"
 	"sync"
 	"syscall"
 	"unsafe"
@@ -74,6 +75,14 @@ func getProcessID(hwnd syscall.Handle) (uint32, error) {
 		return 0, e1
 	}
 	return pid, nil
+}
+
+func trimSuffix(name string) string {
+	s := filepath.Ext(name)
+	if s == "" {
+		return name
+	}
+	return strings.TrimSuffix(name, s)
 }
 
 func getProcessName(pid uint32) (string, error) {
@@ -184,7 +193,7 @@ func run() int {
 				return 1
 			}
 
-			s := fmt.Sprintf("%s[%s]", name, text)
+			s := fmt.Sprintf("%s[%s]", trimSuffix(name), text)
 			inputChan <- s
 			hwndMap[s] = h
 			return 1
