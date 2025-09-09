@@ -184,7 +184,7 @@ func run() int {
 				return 1
 			}
 
-			s := fmt.Sprintf("%s[%s]", text, name)
+			s := fmt.Sprintf("%s[%s]", name, text)
 			inputChan <- s
 			hwndMap[s] = h
 			return 1
