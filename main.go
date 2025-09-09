@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"slices"
 	"sync"
 	"syscall"
@@ -108,7 +109,6 @@ func isVisibleWindow(hwnd syscall.Handle) bool {
 
 func isSkippable(name string) bool {
 	ss := []string{
-		"fzf.exe",
 		"explorer.exe",
 		"MouseGestureL.exe",
 		"TextInputHost.exe",
@@ -148,7 +148,17 @@ func ForceForegroundWindow(hwnd syscall.Handle) bool {
 	return ret != 0
 }
 
+func getExeName() string {
+	_, file, _, ok := runtime.Caller(0)
+	if ok {
+		return filepath.Base(filepath.Dir(file)) + ".exe"
+	}
+	return ""
+}
+
 func run() int {
+
+	exe := getExeName()
 
 	hwndMap := make(map[string]syscall.Handle)
 
@@ -170,10 +180,7 @@ func run() int {
 			}
 
 			name, err := getProcessName(pid)
-			if err != nil || name == "" {
-				return 1
-			}
-			if isSkippable(name) {
+			if err != nil || name == "" || name == exe || isSkippable(name) {
 				return 1
 			}
 
